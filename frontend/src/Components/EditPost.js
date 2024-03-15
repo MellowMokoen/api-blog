@@ -1,42 +1,63 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
-const AddPost = () => {
+const EditPost = () => {
+  const { postId } = useParams(); // Get the postId from URL parameters
+  const navigate = useNavigate();
   const [post, setPost] = useState({
     title: "",
     content: "",
-    image: "", // State for image URL
+    image: "",
   });
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (postId) {
+      // Fetch the post data for editing
+      axios
+        .get(`/api/posts/${postId}`)
+        .then((response) => {
+          setPost({
+            title: response.data.title,
+            content: response.data.content,
+            image: response.data.image,
+          });
+        })
+        .catch((error) => console.error("Failed to fetch post:", error));
+    }
+  }, [postId]);
 
   const handleChange = (e) => {
     setPost({ ...post, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      // Expanded payload to include the 'added_via_form' boolean
-      const payload = {
-        title: post.title,
-        content: post.content,
-        image: post.image, // Include image URL
-        added_via_form: true, // Mark the post as added via the form
-      };
-      await axios.post("http://localhost:5000/api/posts", payload);
+    const payload = {
+      title: post.title,
+      content: post.content,
+      image: post.image,
+    };
 
-      // Redirect and signal to Blog.js to refresh the posts list
-      navigate("/", { state: { refresh: true } });
-    } catch (error) {
-      console.error("Failed to add post:", error);
-    }
+    const axiosCall = postId
+      ? axios.put(`/api/posts/${postId}`, payload)
+      : axios.post("/api/posts", payload);
+
+    axiosCall
+      .then(() => {
+        navigate(`/posts/${postId}`); // Redirect to the homepage or to the updated post
+      })
+      .catch((error) => {
+        console.error("Failed to save post:", error);
+      });
   };
 
   return (
     <div className="bg-my-image bg-no-repeat bg-cover py-10 md:bg-cover">
       <div className="container mx-auto my-10 pb-14 bg-white rounded-md">
-        <h2 className="text-2xl font-bold mb-5">Add a New Post</h2>
+        <h2 className="text-2xl font-bold mb-5">
+          {postId ? "Edit Post" : "Add a New Post"}
+        </h2>
         <form onSubmit={handleSubmit}>
           {/* Title input */}
           <div className="mb-4">
@@ -95,7 +116,7 @@ const AddPost = () => {
             className="bg-rose-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             type="submit"
           >
-            Create Post
+            {postId ? "Update Post" : "Create Post"}
           </button>
         </form>
       </div>
@@ -103,4 +124,4 @@ const AddPost = () => {
   );
 };
 
-export default AddPost;
+export default EditPost;
