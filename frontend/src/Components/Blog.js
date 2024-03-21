@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import BlogData from "./BlogData";
 
 export default function Blog() {
   const [apiPosts, setApiPosts] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchApiPosts = async () => {
@@ -20,6 +21,9 @@ export default function Blog() {
     fetchApiPosts();
   }, []); // Empty dependency array means this effect runs once on mount
 
+  const handleLogout = () => {
+    navigate("/login");
+  };
   // Combine API posts and static BlogData, ensuring API posts are on top
   const combinedPosts = [...apiPosts, ...BlogData];
 
@@ -38,8 +42,11 @@ export default function Blog() {
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <button className="bg-rose-500 px-3 py-1 text-white rounded-lg">
-                    Log In
+                  <button
+                    onClick={handleLogout}
+                    className="bg-rose-500 px-3 py-1 text-white rounded-lg"
+                  >
+                    Log Out
                   </button>
                 </li>
                 <li className="nav-item">
