@@ -1,5 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext"; // Adjust the import path as per your file structure
 import Blog from "./Components/Blog";
 import FullStories from "./Components/FullStories";
@@ -15,8 +20,9 @@ function App() {
       <Router>
         <Routes>
           <Route path="/register" element={<Register />} />
+          <Route path="/" element={<Navigate replace to="/login" />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Blog />} />
+          <Route path="/blog" element={<Blog />} />
           <Route path="/posts/:postId" element={<FullStories />} />
           {/* Use the same component for adding a new post and editing an existing post */}
           <Route path="/add-post" element={<EditPost />} />

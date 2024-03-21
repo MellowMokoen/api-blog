@@ -13,7 +13,7 @@ const Login = () => {
     e.preventDefault();
     try {
       await auth.login(username, password);
-      navigate("/"); // Redirect to home page after successful login
+      navigate("/blog"); // Redirect to home page after successful login
     } catch (error) {
       console.error("Login failed:", error);
       // Optionally handle login failure (e.g., display an error message)
