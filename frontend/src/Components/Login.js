@@ -9,6 +9,7 @@ const Login = () => {
   const auth = useAuth(); // Use the useAuth hook here
   const navigate = useNavigate();
 
+  // Event handler for form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -20,6 +21,7 @@ const Login = () => {
     }
   };
 
+  // Render login form
   return (
     <div className="bg-my-image bg-no-repeat bg-cover py-10 md:bg-cover">
       <div className="container mx-auto pb-14 bg-white rounded-md">

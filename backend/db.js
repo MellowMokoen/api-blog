@@ -9,18 +9,24 @@ const pool = mysql.createPool({
   database: "blogdb", // MySQL database name
 });
 
+// Function to find a user by username
 async function findUserByUsername(username) {
+  // Execute a SQL query to select a user by username
   const [rows] = await pool.query("SELECT * FROM users WHERE username = ?", [
     username,
   ]);
+  // Return the first row (if found)
   return rows[0];
 }
 
+// Function to create a new user
 async function createUser({ username, hashedPassword }) {
+  // Execute a SQL query to insert a new user into the database
   const [result] = await pool.query(
     "INSERT INTO users (username, hashed_password) VALUES (?, ?)",
     [username, hashedPassword]
   );
+  // Return the ID of the newly inserted user
   return result.insertId;
 }
 

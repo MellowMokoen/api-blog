@@ -5,12 +5,15 @@ import { useParams, useNavigate } from "react-router-dom";
 const EditPost = () => {
   const { postId } = useParams(); // Get the postId from URL parameters
   const navigate = useNavigate();
+
+  // Define state variables using useState hook
   const [post, setPost] = useState({
     title: "",
     content: "",
     image: "",
   });
 
+  // useEffect hook to fetch post data for editing when postId changes
   useEffect(() => {
     if (postId) {
       // Fetch the post data for editing
@@ -25,23 +28,26 @@ const EditPost = () => {
         })
         .catch((error) => console.error("Failed to fetch post:", error));
     }
-  }, [postId]);
+  }, [postId]); // This effect runs when postId changes
 
+  // Event handler for input change
   const handleChange = (e) => {
     setPost({ ...post, [e.target.name]: e.target.value });
   };
 
+  // Event handler for form submission
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission behavior
     const payload = {
       title: post.title,
       content: post.content,
       image: post.image,
     };
 
+    // Determine whether to make a POST or PUT request based on postId
     const axiosCall = postId
-      ? axios.put(`/api/posts/${postId}`, payload)
-      : axios.post("/api/posts", payload);
+      ? axios.put(`/api/posts/${postId}`, payload) // Update existing post
+      : axios.post("/api/posts", payload); // Create new post
 
     axiosCall
       .then(() => {
@@ -52,6 +58,7 @@ const EditPost = () => {
       });
   };
 
+  // Render the edit post form
   return (
     <div className="bg-my-image bg-no-repeat bg-cover py-10 md:bg-cover">
       <div className="container mx-auto my-10 pb-14 bg-white rounded-md">

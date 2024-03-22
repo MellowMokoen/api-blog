@@ -8,6 +8,7 @@ const Register = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate(); // Initialize useNavigate
 
+  // Event handler for form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {

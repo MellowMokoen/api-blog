@@ -3,42 +3,49 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const AddPost = () => {
+  // Define state variables using useState hook
   const [post, setPost] = useState({
     title: "",
     content: "",
     image: "", // State for image URL
   });
+
+  // Use navigate hook for programmatic navigation
   const navigate = useNavigate();
 
+  // Event handler for input change
   const handleChange = (e) => {
     setPost({ ...post, [e.target.name]: e.target.value });
   };
 
+  // Event handler for form submission
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission behavior
     try {
-      // Expanded payload to include the 'added_via_form' boolean
+      // Construct payload to be sent to server
       const payload = {
         title: post.title,
         content: post.content,
         image: post.image, // Include image URL
         added_via_form: true, // Mark the post as added via the form
       };
-      await axios.post("http://localhost:5000/api/posts", payload);
 
-      // Redirect and signal to Blog.js to refresh the posts list
-      navigate("/", { state: { refresh: true } });
+      // Send POST request to server to add new post
+      await axios.post(`http://localhost:5000/api/posts`, payload);
+
+      // Redirect to /blog route and signal to Blog.js to refresh the posts list
+      navigate("/blog", { state: { refresh: true } });
     } catch (error) {
       console.error("Failed to add post:", error);
     }
   };
 
+  // Render form to add a new post
   return (
     <div className="bg-my-image bg-no-repeat bg-cover py-10 md:bg-cover">
       <div className="container mx-auto my-10 pb-14 bg-white rounded-md">
-        <h2 className="text-2xl font-bold mb-5">Add a New Post</h2>
+        <h2 className="text-rose-500 text-2xl font-bold m-5">Add a New Post</h2>
         <form onSubmit={handleSubmit}>
-          {/* Title input */}
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
@@ -56,7 +63,7 @@ const AddPost = () => {
               onChange={handleChange}
             />
           </div>
-          {/* Content input */}
+
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
@@ -73,7 +80,7 @@ const AddPost = () => {
               onChange={handleChange}
             />
           </div>
-          {/* Image URL input */}
+
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"

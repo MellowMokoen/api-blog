@@ -4,29 +4,33 @@ import axios from "axios";
 import BlogData from "./BlogData";
 
 export default function Blog() {
+  // Define state variables using useState hook
   const [apiPosts, setApiPosts] = useState([]);
   const navigate = useNavigate();
 
+  // useEffect hook to fetch API posts on component mount
   useEffect(() => {
     const fetchApiPosts = async () => {
       try {
-        // Replace '/api/posts' with your actual API endpoint
+        // Fetch posts from API
         const response = await axios.get("/api/posts");
-        setApiPosts(response.data); // Assuming the response data is the array of posts
+        setApiPosts(response.data); // Set API posts in state
       } catch (error) {
         console.error("Error fetching posts from API:", error);
       }
     };
 
-    fetchApiPosts();
+    fetchApiPosts(); // Invoke fetchApiPosts function
   }, []); // Empty dependency array means this effect runs once on mount
 
+  // Event handler for logout button
   const handleLogout = () => {
     navigate("/login");
   };
   // Combine API posts and static BlogData, ensuring API posts are on top
   const combinedPosts = [...apiPosts, ...BlogData];
 
+  // Render blog page
   return (
     <div className="bg-my-image bg-no-repeat bg-cover overflow-hidden py-10 h-screen md:bg-cover">
       <div className="container mx-auto pb-14 bg-white rounded-md">

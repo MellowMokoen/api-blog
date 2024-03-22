@@ -1,16 +1,16 @@
 // Import necessary modules
 const express = require("express");
-const router = express.Router(); // Create an Express router
-const mysql = require("mysql2"); // Import MySQL module
-const pass = "Paballo1327@"; // MySQL password (NOTE: Consider using environment variables for sensitive data)
+const router = express.Router();
+const mysql = require("mysql2");
+const pass = "Paballo1327@";
 
 // Create MySQL connection pool with required configuration
 const pool = mysql.createPool({
   connectionLimit: 10, // Limiting the number of connections to MySQL server
   host: "localhost", // MySQL server host
-  user: "root", // MySQL user
-  password: pass, // MySQL password (NOTE: Consider using environment variables for sensitive data)
-  database: "blogdb", // MySQL database name
+  user: "root",
+  password: pass,
+  database: "blogdb",
 });
 
 // DELETE request to delete a user by ID

@@ -3,91 +3,76 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import BlogData from "./BlogData";
 
-// Component for displaying full stories including comments
 const FullStories = () => {
-  // Get the postId from the URL parameters
-  const { postId } = useParams();
-  const navigate = useNavigate(); // Hook for navigation
-  const [dynamicPost, setDynamicPost] = useState(null); // State to store dynamic post data
-  const [comments, setComments] = useState([]); // State to store comments for the post
+  const { postId } = useParams(); // Get the postId from URL parameters
+  const navigate = useNavigate();
+  const [dynamicPost, setDynamicPost] = useState(null); // State for dynamic post details
+  const [comments, setComments] = useState([]); // State for comments associated with the post
 
-  // Effect hook to fetch post data and comments when postId changes
+  // useEffect hook to fetch post details and associated comments when postId changes
   useEffect(() => {
-    // Check if post exists in static data, if not, fetch from API
-    const postFromBlogData = BlogData.find(
-      (post) => post.id === parseInt(postId)
-    );
-    if (!postFromBlogData) {
-      axios
-        .get(`/api/posts/${postId}`)
-        .then((response) => {
-          setDynamicPost(response.data); // Set dynamic post data
-          // Fetch comments for this post
-          return axios.get(`/api/comments/post/${postId}`);
-        })
-        .then((response) => {
-          setComments(response.data); // Set comments data
-        })
-        .catch((error) => {
-          console.error("Error fetching post or comments:", error); // Log errors
-        });
-    } else {
-      setDynamicPost(postFromBlogData); // Set dynamic post data from static data
-      // Optionally, handle static posts comments if needed
-    }
-  }, [postId]); // Dependency array to run effect only when postId changes
+    const fetchPostDetails = async () => {
+      try {
+        // Fetch post details
+        const response = await axios.get(`/api/posts/${postId}`);
+        setDynamicPost(response.data); // Set post details in state
+        const commentsResponse = await axios.get(
+          `/api/comments/post/${postId}`
+        );
+        setComments(commentsResponse.data); // Set comments in state
+      } catch (error) {
+        console.error("Error fetching post details:", error);
+      }
+    };
 
-  // Function to handle post deletion
-  const handleDelete = () => {
-    axios
-      .delete(`/api/posts/${postId}`)
-      .then(() => {
-        navigate("/"); // Redirect to the homepage after deletion
-      })
-      .catch((error) => {
-        console.error("Error deleting post:", error); // Log errors
-      });
+    fetchPostDetails(); // Invoke fetchPostDetails function
+  }, [postId]); // This effect runs when postId changes
+
+  // Event handler for deleting the post
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`/api/posts/${postId}`); // Send delete request to delete the post
+      navigate("/blog"); // Redirect to the blog page after successful deletion
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
   };
 
-  // Function to format the created_at timestamp
+  // Function to format date string
   const formatDate = (dateString) => {
-    const options = {
+    return new Date(dateString).toLocaleString("default", {
       year: "numeric",
       month: "long",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-      timeZoneName: "short",
-    };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+      second: "2-digit",
+      hour12: true,
+    });
   };
 
-  // Render content based on dynamicPost and comments data
+  // Render loading message if dynamicPost is not available yet
   if (!dynamicPost) {
-    return <div>No post found</div>; // If no post found, render a message
+    return <div>No post found</div>;
   }
 
-  // Render full story and comments
+  // Render the full post details
   return (
     <div className="bg-my-image bg-no-repeat bg-cover py-10 md:bg-cover">
       <div className="container mx-auto pb-14 bg-white rounded-md">
         <div className="font-rubik">
           <div className="flex blog-post">
             <div className="blog-post-content pt-16 flex flex-col w-1/2">
-              {/* Render post title and content */}
               <h2 className="text-3xl my-4">{dynamicPost.title}</h2>
-              <p className="leading-loose">
-                {dynamicPost.content || dynamicPost.description}
-              </p>
+              <p className="leading-loose">{dynamicPost.content}</p>
+              <p>Posted on: {formatDate(dynamicPost.created_at)}</p>
               <Link to="/">
-                {/* Button to navigate to more articles */}
                 <button className="bg-rose-500 px-3 my-5 text-white rounded-lg">
                   More Articles
                 </button>
               </Link>
               <div className="flex">
                 <Link to={`/edit-post/${dynamicPost.id}`}>
-                  {/* Button to edit the post */}
                   <button className="bg-rose-500 px-3 text-white rounded-lg">
                     Edit the post
                   </button>
@@ -100,18 +85,14 @@ const FullStories = () => {
                 </button>
               </div>
             </div>
-            <div className="flex flex-col w-1/2">
-              {/* Render post image */}
-              {dynamicPost.image && (
+            {dynamicPost.image && (
+              <div className="flex flex-col w-1/2">
                 <img
                   src={dynamicPost.image}
                   className="w-1/2 mx-auto block pt-16"
                   alt=""
                 />
-              )}
-              <div>
                 <h3 className="pt-4 pb-2">Comments:</h3>
-                {/* Render comments */}
                 {comments.length > 0 ? (
                   comments.map((comment) => (
                     <div key={comment.id} className="pb-2">
@@ -123,7 +104,7 @@ const FullStories = () => {
                   <p>No comments yet.</p>
                 )}
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -131,4 +112,4 @@ const FullStories = () => {
   );
 };
 
-export default FullStories; // Export FullStories component
+export default FullStories;

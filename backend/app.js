@@ -29,7 +29,7 @@ app.get("/", (req, res) => {
 });
 
 // Start the server
-const PORT = process.env.PORT || 5001; // Get the port from environment variables or use 5001 as default
+const PORT = process.env.PORT || 5000; // Get the port from environment variables or use 5001 as default
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`); // Log server start-up message
 });
